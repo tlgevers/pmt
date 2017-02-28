@@ -1,0 +1,20 @@
+{
+  "name": "file_upload",
+  "version": "0.0.1",
+  "dependencies": {
+    "connect-form": "^0.2.1",
+    "express": "4.13.3",
+    "jquery": "^3.1.1",
+    "multer": "^1.1.0",
+    "ng-file-upload": "^12.2.13",
+    "skipper": "^0.7.3",
+    "upload-file": "^1.2.0",
+    "mongojs": "2.4.0",
+
+  },
+  "devDependencies": {
+    "should": "~7.1.0",
+    "mocha": "~2.3.3",
+    "supertest": "~1.1.0"
+  }
+}

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+  <head>
+    <title>FC-Online</title>
+    <link rel="icon" href="/favicon.ico" sizes="15x15" type="image/ico"/>
+    <script src="jquery-3.1.1.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+    <script src="//www.atlasestateagents.co.uk/javascript/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+    <link rel="stylesheet" href="style/style.css">
+  </head>
+  <body ng-controller="AppCtrl" ng-cloak>
+    <div class="form-group"  style="position:absolute;left:1px;float:left;width:100%;margin:0;">
+
+      <div id="pageheader">
+          <form class="form-inline">&nbsp;
+
+          Filters:&nbsp;<input input class="form-control input-lg" id="inputlg" type="search" ng-model="skufilter" placeholder="Search codes" name="filters">
+                        <input input class="form-control input-lg" id="inputlg" type="search" ng-model="productfilter" placeholder="Search names" class="form-control" name="filters">
+                        Status:&nbsp;
+                        <select style="width:150px;" type="text" name="filters" ng-model="statusfilter">
+                          <option value="">none</option>
+                          <option value="pending">Pending</option>
+                          <option value="listeditem">Listed</option>
+                          <option value="unlisted">Unlisted</option>
+                        </select>
+                        &nbsp;
+                        <a style="" ng-click="toggleAddBar()" id="addbutton">.</a>
+
+          <div id="titleholder"><h4 id="titleactual"> ITEM MANAGEMENT </h4></div>
+
+          </form>
+      </div>
+          <div id="grayall"></div>
+          <div id="exit-add-image" ng-click="exitForms()"></div>
+          <div id="add-screen" class="container">
+
+            <form id        =  "uploadForm"
+               enctype   =  "multipart/form-data"
+               action    =  "/api/photo"
+               method    =  "post"
+               >
+              <h1>Online Product Details - Add</h1>
+              <input type="checkbox" name="rickapproved" hidden>
+              <input type="checkbox" name="janaapproved" hidden>
+              <input type="checkbox" name="jenifferapproved" hidden>
+              <input type="checkbox" name="justinapproved" hidden>
+              Submitted By:<br><select style="width:150px;" type="text" name="submittedby" required>
+                <option value="default">Select One</option>
+                <option value="Jennifer">Jennifer</option>
+                <option value="Jana">Jana</option>
+                <option value="Jim">Jim</option>
+                <option value="Tiffany">Tiffany</option>
+                <option value="Wende">Wende</option>
+                <option value="Kim">Kim</option>
+              </select><hr>
+              Miva List Date:<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="date" name="listdate"><hr>
+              Product Name:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="productname" autocomplete="off" placeholder="Name here..." autofocus required><hr>
+              Product Details:&nbsp;<br><textarea cols="90" rows="4" name="productdetails" placeholder="Details here..." autocomplete="off"></textarea><hr>
+              Status:<br>
+              <select style="width:150px;" type="text" name="itemstatus">
+                <option value="pending">Pending</option>
+                <option value="listeditem">Listed</option>
+                <option value="unlisted">Unlisted</option>
+              </select><hr>
+              <!--UPC:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="upc" autocomplete="off"><hr>-->
+              SKU:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="sku" autocomplete="off" placeholder="245111" required><hr>
+              Canonical Category Code:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="ccc" autocomplete="off" placeholder="promotions"><hr>
+              Retail Price:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="retailprice" step="any" min="0" autocomplete="off" placeholder="25.99"><hr>
+              Cost:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="costprice" step="any" min="0" autocomplete="off" placeholder="12.99"><hr>
+              Variants(Sizes/Types/Colors) & Quantities:
+              <table id="tablevariants">
+                <tr>
+                  <th>Variant</th><th>Quantity</th><th>UPC</th><th><a style="" ng-click="rowVariantPlus()" id="addvariant">+</a>&nbsp;</th><th><a style="" ng-click="rowVariantLess()" id="subtractvariant">-</a></th>
+                </tr>
+                <tr>
+
+                  <td><input type="text" name="size" autocomplete="off" placeholder="color-size-sku" required></td><td><input type="number" name="quantity" autocomplete="off" placeholder="100" required></td><td><input type="text" name="upc" autocomplete="off" placeholder="400001111111" required></td>
+                </tr>
+                </table><hr>
+              Related Products:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="relatedproducts" placeholder="none" autocomplete="off"><hr>
+              Brand Name:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="brandname" placeholder="Brand here..." autocomplete="off"><hr>
+              Brand Permission&nbsp;<br>
+              <select style="width:150px;" type="text" name="brandpermission">
+                <option value="Y">Y</option>
+                <option value="N">N</option>
+              </select><hr>
+              Compare At:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="compareat" step="any" min="0" placeholder="35.99" autocomplete="off"><hr>
+              Made In:&nbsp;<br><select style="width:150px;" type="text" name="madein">
+                <option value="na">NA</option>
+                <option value="usa">USA</option>
+                <option value="imported">Imported</option>
+              </select><hr>
+              <!--Overview:&nbsp;<br>&nbsp;&nbsp;<input type="text" name="overview" autocomplete="off"><hr>-->
+              <!--Product Specifications:&nbsp;<br>&nbsp;&nbsp;<textarea name="productspecifications" autocomplete="off" cols="50" rows="3"></textarea><hr>-->
+              <h1>Google Shopping</h1>
+              Title:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gtitle" placeholder="Same as product name..." autocomplete="off"><hr>
+              Condition:&nbsp;<br>&nbsp;&nbsp;
+              <select style="width:150px;" type="text" name="gcondition">
+                <option value="new">New</option>
+                <option value="used">Used</option>
+                <option value="refurbished">Refurbished</option>
+              </select><hr>
+              Availibility:&nbsp;<br>&nbsp;&nbsp;
+              <select style="width:150px;" type="text" name="gavailibility">
+                <option value="instock">In stock</option>
+                <option value="outofstock">Out of stock</option>
+                <option value="preorder">Preorder</option>
+
+              </select><hr>
+              Google Product Category:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gproductcategory" placeholder="Shirts and Tops..." autocomplete="off"><hr>
+              Product Type:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gproducttype" placeholder="Clothing..." autocomplete="off"><hr>
+              Color:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gcolor" placeholder="Blue and White..." autocomplete="off"><hr>
+              Material:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gmaterial" placeholder="Cotton..." autocomplete="off"><hr>
+              Pattern:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gpattern" placeholder="Striped..." autocomplete="off"><hr>
+              Gender&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" style="width:150px;" type="text" name="ggender">
+                <option value="na">na</option>
+                <option value="mens">Mens</option>
+                <option value="womens">Womens</option>
+              </select><hr>
+              Age Group:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" style="width:150px;" type="text" name="gagegroup">
+                <option value="na">na</option>
+                <option value="junior">Junior</option>
+                <option value="adult">Adult</option>
+              </select><hr>
+              Size Type:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" style="width:150px;" type="text" name="gsizetype">
+                <option value="na">na</option>
+                <option value="regular">Regular</option>
+                <option value="petite">Petite</option>
+                <option value="plus">Plus</option>
+                <option value="bigandtall">Big and Tall</option>
+                <option value="maternity">Maternity</option>
+              </select><hr>
+              Size System:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" style="width:150px;" type="text" name="gsizesystem">
+                <option value="na">na</option>
+                <option value="usa">USA</option>
+                <option value="uk">United Kingdom</option>
+                <option value="eu">Europe</option>
+                <option value="china">China</option>
+                <option value="mexico">Mexico</option>
+              </select><hr>
+
+              <br>
+		Final and edited images to be uploaded by Justin:<br>
+		<input type="file" name="userPhoto" value="select image" multiple><br>
+
+              <br><input type='submit' value="upload"  name='addsubmit'>
+              <span id="status"></span>
+
+            </form>
+          </div>
+          <div id="exit-edit-image" ng-click="exitForms()"></div>
+          <div id="edit-screen">
+
+            <form id=  "editForm"
+
+               action    =  "{{'/api/photo/edit/' + item._id}}"
+               method    =  "post"
+               >
+              <h1>Online Product Details - Edit</h1>
+              <b>Last Updated:&nbsp;&nbsp;</b>{{item.dateentered}}<hr>
+              <b>Approved By:</b><br>
+                <input type="checkbox" name="rickapproved" ng-checked="item.rickapproved">&nbsp;Rick/Final Approved: &nbsp;<br>
+                <input type="checkbox" name="janaapproved" ng-checked="item.janaapproved">&nbsp;Jana/UPC Approved: &nbsp;<br>
+                <input type="checkbox" name="jenniferapproved" ng-checked="item.jenniferapproved">&nbsp;Jennifer/Google Approved: &nbsp;<br>
+                <input type="checkbox" name="justinapproved" ng-checked="item.justinapproved">&nbsp;Justin/Images Approved: &nbsp;<hr>
+              Submitted By:<br><select style="width:150px;" type="text" name="submittedby" ng-model="item.submittedby">
+                <option value="default">Select One</option>
+                <option value="Jennifer">Jennifer</option>
+                <option value="Jana">Jana</option>
+                <option value="Jim">Jim</option>
+                <option value="Tiffany">Tiffany</option>
+                <option value="Wende">Wende</option>
+                <option value="Kim">Kim</option>
+              </select><hr>
+              Miva List Date:<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="date-local" name="listdate" placeholder="MM-dd-yyyy" autocomplete="off" ng-model="item.listdate"><hr>
+              <input type="hidden" name="id" autocomplete="off" ng-model="item._id">
+              Product Name:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="productname" autocomplete="off" ng-model="item.productname" autofocus><hr>
+              Product Details:&nbsp;<br>&nbsp;<textarea cols="90" rows="4" name="productdetails" autocomplete="off" ng-model="item.productdetails"></textarea><hr>
+              Status:&nbsp;<br>
+              <select style="width:150px;" type="text" name="itemstatus" ng-model="item.itemstatus">
+                <option value="pending">Pending</option>
+                <option value="listeditem">Listed</option>
+                <option value="unlisted">Unlisted</option>
+              </select><hr>
+              SKU:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="sku" autocomplete="off" ng-model="item.sku"><hr>
+              <!--UPC:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="upc" autocomplete="off" ng-model="item.upc"><hr>-->
+              Canonical Category Code:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="ccc" autocomplete="off" ng-model="item.ccc"><hr>
+              Retail Price:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="retailprice" step="any" min="0" autocomplete="off" ng-model="item.retailprice"><hr>
+              Cost:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="costprice" step="any" min="0" autocomplete="off" ng-model="item.costprice"><hr>
+              Variants(Sizes/Types/Colors) & Quantities:
+              <table id="tablevariantsedit">
+                <tbody>
+                <tr>
+                  <th>Variant</th><th>Quantity</th><th>UPC</th><th><a style="" ng-click="rowVariantPlusEdit()" id="addvariant">+</a>&nbsp;</th><th><a style="" ng-click="rowVariantLessEdit()" id="subtractvariant">-</a></th>
+                </tr>
+                <tr ng-repeat="s in item.sizes">
+                  <td><input class="form-control input-lg" id="inputlg" type="text" name="size" autocomplete="off" ng-model="s.size"></td><td><input class="form-control input-lg" id="inputlg" type="number" name="quantity" autocomplete="off" ng-model="s.quantity"></td><td><input class="form-control input-lg" id="inputlg" type="text" name="upc" autocomplete="off" ng-model="s.upc"></td>
+                </tr>
+                </tbody>
+                </table><hr>
+              Related Products:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="relatedproducts" autocomplete="off" ng-model="item.relatedproducts"><hr>
+              Brand Name:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="brandname" autocomplete="off" ng-model="item.brandname"><hr>
+              Brand Permission&nbsp;<br>
+              <select style="width:150px;" type="text" name="brandpermission" ng-model="item.brandpermission">
+                <option value="Y">Y</option>
+                <option value="N">N</option>
+              </select><hr>
+              Compare At:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="number" name="compareat" step="any" min="0" autocomplete="off" string to number ng-model="item.compareat"><hr>
+              Made In:&nbsp;<br>&nbsp;<select style="width:150px;" type="text" name="madein" ng-model="item.madein">
+                <option value="na">NA</option>
+                <option value="usa">USA</option>
+                <option value="imported">Imported</option>
+              </select><hr>
+              <!--Overview:&nbsp;<br>&nbsp;&nbsp;<input type="text" name="overview" autocomplete="off" ng-model="item.overview"><hr>-->
+              <!--Product Specifications:&nbsp;<br>&nbsp;&nbsp;<textarea name="productspecifications" autocomplete="off" ng-model="item.productspecifications" cols="50" rows="3"></textarea><hr>-->
+              <h1>Google Shopping</h1>
+              Title:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gtitle" autocomplete="off" ng-model="item.gtitle"><hr>
+              Condition:&nbsp;<br>
+              <select style="width:150px;" type="text" name="gcondition" ng-model="item.gcondition">
+                <option value="new">New</option>
+                <option value="used">Used</option>
+                <option value="refurbished">Refurbished</option>
+              </select><hr>
+              Availibility:&nbsp;<br>
+              <select style="width:150px;" type="text" name="gavailibility" ng-model="item.gavailibility">
+                <option value="instock">In stock</option>
+                <option value="outofstock">Out of stock</option>
+                <option value="preorder">Preorder</option>
+
+              </select><hr>
+              Google Product Category:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gproductcategory" autocomplete="off" ng-model="item.gproductcategory"><hr>
+              Product Type:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gproducttype" autocomplete="off" ng-model="item.gproducttype"><hr>
+              Color:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gcolor" autocomplete="off" ng-model="item.gcolor"><hr>
+              Material:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gmaterial" autocomplete="off" ng-model="item.gmaterial"><hr>
+              Pattern:&nbsp;<br>&nbsp;&nbsp;<input class="form-control input-lg" id="inputlg" type="text" name="gpattern" autocomplete="off" ng-model="item.gpattern"><hr>
+              Gender&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" type="text" name="ggender" ng-model="item.ggender">
+                <option value="na">na</option>
+                <option value="mens">Mens</option>
+                <option value="womens">Womens</option>
+              </select><hr>
+              Age Group:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" type="text" name="gagegroup" ng-model="item.gagegroup">
+                <option value="na">na</option>
+                <option value="junior">Junior</option>
+                <option value="adult">Adult</option>
+              </select><hr>
+              Size Type:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" type="text" name="gsizetype" ng-model="item.gsizetype">
+                <option value="na">na</option>
+                <option value="regular">Regular</option>
+                <option value="petite">Petite</option>
+                <option value="plus">Plus</option>
+                <option value="bigandtall">Big and Tall</option>
+                <option value="maternity">Maternity</option>
+              </select><hr>
+              Size System:&nbsp;<br>&nbsp;&nbsp;<select style="width:150px;" type="text" name="gsizesystem" ng-model="item.gsizesystem">
+                <option value="na">na</option>
+                <option value="usa">USA</option>
+                <option value="imported">Imported</option>
+              </select><hr>
+              <!--<button class="btn btn-info" ng-click="update()">Update</button><br><hr>-->
+              <input type='submit' value="Update" name='editsubmit'>
+              <span id = "statusedit"></span>
+              <hr>
+              </form>
+              <br><b>Final and edited images to be uploaded by Justin:</b><br><br>
+              <table id="form-table">
+                <!--<li style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:25px;"><a href="" ng-click="imageeditor=true">EDIT IMAGES</a></li>-->
+
+                <!--<td style="border-style:solid; border-color:grey; border-width:1px; width:50%; height:85px;">-->
+                <tr>
+                <!--<column1></column1>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:5%; height:85px;">
+
+                    <img ng-click="displayImage(item.img1)" class="imagesedit" ng-src="/uploads/{{item.img1 != '' && item.img1 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg1(item.img1, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+                  <!--<a id="imgdelete" ng-click="removeImg1(item.img1, item._id)">&nbsp;&nbsp;&nbsp;-->
+                  <!-- <img src="../docs/imgs/change.png" height="20px" width="20px"></a><br>-->
+                  <a ng-click="toggleUpload(1);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px" ></a><br>
+                </td>
+                <td id="uploadbar-1" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                <form id        =  "uploadimg1"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                  <input type="hidden" name="id" value="{{item.sku}}" autocomplete="off">
+                  <input type="hidden" name="img" value="img1" autocomplete="off">
+                  <input type="file" name="userPhoto" value="select image" required>
+                  <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                  <input type='submit' value="upload"  name='submit'>
+                  <span id = "status1"></span>
+                </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>1</h3>
+                </td>
+                </tr>
+                <tr>
+                <!--<column2></column2>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+
+                    <img ng-click="displayImage(item.img2)" class="imagesedit" ng-src="/uploads/{{item.img2 != '' && item.img2 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg2(item.img2, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+                  <!--<a id="imgdelete" ng-click="removeImg2(item.img2, item._id)">&nbsp;&nbsp;&nbsp;-->
+                  <!-- <img src="../docs/imgs/change.png" height="20px" width="20px"></a><br>-->
+                  <a ng-click="toggleUpload(2);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-2" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                <form id        =  "uploadimg2"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                  <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                  <input type="hidden" name="img" value="img2" autocomplete="off">
+                  <input type="file" name="userPhoto" value="select image" required>
+                  <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                  <input type='submit' value="upload"  name='submit'>
+                  <span id = "status2"></span>
+                </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>2</h3>
+                </td>
+                </tr>
+                <tr>
+                <!--<column3></column3>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img3)" class="imagesedit" ng-src="/uploads/{{item.img3 != '' && item.img3 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg3(item.img3, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+                  <!--<a id="imgdelete" ng-click="removeImg3(item.img3, item._id)">&nbsp;&nbsp;&nbsp;-->
+                  <!-- <img src="../docs/imgs/change.png" height="20px" width="20px"></a><br>-->
+                  <a ng-click="toggleUpload(3);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-3" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                <form id        =  "uploadimg3"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                  <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                  <input type="hidden" name="img" value="img3" autocomplete="off">
+                  <input type="file" name="userPhoto" value="select image" required>
+                  <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                  <input type='submit' value="upload"  name='submit' >
+                  <span id = "status3"></span>
+                </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>3</h3>
+                </td>
+                </tr>
+                <tr>
+                <!--<column4></column4>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+
+
+                    <img ng-click="displayImage(item.img4)" class="imagesedit" ng-src="/uploads/{{item.img4 != '' && item.img4 || 'blank.png'}}" height="80px">
+
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg4(item.img4, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(4);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-4" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                <form id        =  "uploadimg4"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                  <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                  <input type="hidden" name="img" value="img4" autocomplete="off">
+                  <input type="file" name="userPhoto" value="select image" required>
+
+                  <input type='submit' value="upload"  name='submit'>
+                  <span id = "status4"></span>
+                </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>4</h3>
+                </td>
+                </tr>
+                <tr>
+                <!--<column5></column5>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img5)" class="imagesedit" ng-src="/uploads/{{item.img5 != '' && item.img5 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg5(item.img5, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(5);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-5" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg5"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img5" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status5"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>5</h3>
+                </td>
+                </tr>
+
+                <tr>
+                <!--<column6></column6>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img6)" class="imagesedit" ng-src="/uploads/{{item.img6 != '' && item.img6 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg6(item.img6, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(6);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-6" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg6"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img6" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status6"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>6</h3>
+                </td>
+                </tr>
+
+                <tr>
+                <!--<column7></column7>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img7)" class="imagesedit" ng-src="/uploads/{{item.img7 != '' && item.img7 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg7(item.img7, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(7);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-7" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg7"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img7" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status7"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>7</h3>
+                </td>
+                </tr>
+
+                <tr>
+                <!--<column8></column8>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img8)" class="imagesedit" ng-src="/uploads/{{item.img8 != '' && item.img8 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg8(item.img8, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(8);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-8" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg8"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img8" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status8"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>8</h3>
+                </td>
+                </tr>
+
+                <tr>
+                <!--<column9></column9>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img9)" class="imagesedit" ng-src="/uploads/{{item.img9 != '' && item.img9 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg9(item.img9, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(9);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-9" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg9"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img9" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status9"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>9</h3>
+                </td>
+                </tr>
+
+                <tr>
+                <!--<column9></column9>-->
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <img ng-click="displayImage(item.img10)" class="imagesedit" ng-src="/uploads/{{item.img10 != '' && item.img10 || 'blank.png'}}" height="80px">
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px; background-color: #9e9e9e;">
+                  <a id="imgdelete" ng-click="removeImg10(item.img10, item._id)">
+                   <img src="../docs/imgs/imgdelete.png" height="20px" width="20px"></a><br>
+
+                  <a ng-click="toggleUpload(10);" href="">
+                   <img src="../docs/imgs/upload.png" height="20px" width="20px"></a><br>
+                </td>
+                <td id="uploadbar-10" style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                  <form id        =  "uploadimg10"
+                   enctype   =  "multipart/form-data"
+                   action    =  "{{'/api/photo/single/' + item._id}}"
+                   method    =  "post"
+                  >
+                    <input type="hidden" name="id" value="{{item._id}}" autocomplete="off">
+                    <input type="hidden" name="img" value="img10" autocomplete="off">
+                    <input type="file" name="userPhoto" value="select image" required>
+                    <!--button class="btn btn-primary" ng-click="addItem()">Add</button-->
+                    <input type='submit' value="upload"  name='submit'>
+                    <span id = "status10"></span>
+                  </form>
+                </td>
+                <td style="border-style:solid; border-color:grey; border-width:1px; width:10%; height:85px;">
+                    <h3>10</h3>
+                </td>
+                </tr>
+
+
+              </table>
+
+
+
+              <span id = "status"></span>
+
+          </div>
+          <div id="image-display">
+            <img id="image-display-holder" height="100%" width="auto" src="" style="position: absolute;margin: auto;top: 0;left: 0;right: 0;bottom: 0;">
+            <div id="exit-image" ng-click="hideImage()"></div>
+          </div>
+
+     <div id="main" style="float:left;top:60px;width:100%;position:absolute;z-index:0;left:0px;" ng-init="refresh()">
+        <ul style="list-style-type: none; padding: 0; margin-left:0;">
+          <li ng-repeat="item in items | filter:{sku:skufilter} | filter:{productname:productfilter} | filter:{itemstatus:statusfilter} | orderBy : dateentered : true">
+            <div class="item-container">
+            <div ng-show="item.itemstatus" style="position:absolute" id="{{item.itemstatus}}"></div>
+            <div style="position:absolute; float:left;width:50px;padding-top:50px;">
+              <!--<button type="button" class="btn-warning" ng-click="editDisplay(item._id)">EDIT</button>-->
+              <a style="" ng-click="editDisplay(item._id)" id="edit-button"></a>
+            </div>
+            <div style="position:relative;width:auto;left:60px;">
+            <section style="margin:auto;">
+              <div id="titles">
+                <a class="titles" href="" ng-click="fullDisplay(item._id)">SKU: {{item.sku}}</a>&nbsp;&nbsp;<hr>
+                <a class="titles">Name: {{item.productname}}</a>&nbsp;&nbsp;<br>
+                <a class="titles">Status: {{item.itemstatus}}</a><br>
+                <a class="titles">Retail Price: ${{item.retailprice}}</a><br>
+                <a class="titles">Cost Price: ${{item.costprice}}</a><br>
+
+              </div>
+              <div id="productdetails"><p><b>&nbsp;Product Details:</b> {{item.productdetails}}</p></div>
+
+              <div class="image-container">
+                <span>
+                  <img ng-show="item.img1" ng-click="displayImage(item.img1)" class="images" ng-src="/uploads/{{item.img1 != '' && item.img1 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img2" ng-click="displayImage(item.img2)" class="images" ng-src="/uploads/{{item.img2 != '' && item.img2 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img3" ng-click="displayImage(item.img3)" class="images" ng-src="/uploads/{{item.img3 != '' && item.img3 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img4" ng-click="displayImage(item.img4)" class="images" ng-src="/uploads/{{item.img4 != '' && item.img4 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img5" ng-click="displayImage(item.img5)" class="images" ng-src="/uploads/{{item.img5 != '' && item.img5 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img6" ng-click="displayImage(item.img6)" class="images" ng-src="/uploads/{{item.img6 != '' && item.img6 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img7" ng-click="displayImage(item.img7)" class="images" ng-src="/uploads/{{item.img7 != '' && item.img7 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img8" ng-click="displayImage(item.img8)" class="images" ng-src="/uploads/{{item.img8 != '' && item.img8 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img9" ng-click="displayImage(item.img5)" class="images" ng-src="/uploads/{{item.img9 != '' && item.img9 || 'blank.png'}}" height="80px">○
+                  <img ng-show="item.img10" ng-click="displayImage(item.img10)" class="images" ng-src="/uploads/{{item.img10 != '' && item.img10 || 'blank.png'}}" height="80px">
+
+                </span>
+              </div>
+              </section>
+              </div>
+              <div class="approval-bar{{item.approvalstatus}}">
+                <p><b>Rick:</b>&nbsp;<input type="checkbox" onclick="return false;" disabled="disabled" ng-checked="item.rickapproved">&nbsp;|&nbsp;<b>Jana:</b><input type="checkbox" onclick="return false;" disabled="disabled" ng-checked="item.janaapproved">&nbsp;|&nbsp;<b>Jennifer:</b>&nbsp;<input type="checkbox" onclick="return false;" disabled="disabled" ng-checked="item.jenniferapproved">&nbsp;|&nbsp;<b>Justin:</b><input type="checkbox" onclick="return false;" disabled="disabled" ng-checked="item.justinapproved"></p>
+              </div>
+              </div>
+              <!--<div  id="edit-button">-->
+
+              <!--</div>-->
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div id="exit-image-full" ng-click="exitDisplay()"></div>
+      <div id="full-display">
+        <!--<ul>-->
+        <!--  <li >Size:  Quantity: </li>-->
+        <!--</ul>-->
+          <h6 style="position:absolute;right:10px;color:grey;">{{item._id}}</h6>
+          <h3>Product Details</h3><hr>
+          <!--<h5 style="color:black">UPC: {{item.upc}}</h3><hr>-->
+          <h5 style="color:black">SKU: {{item.sku}}</h3><hr>
+          <label class="attributes">Submitted By:</label><p class="properties">&nbsp;{{item.submittedby}}</p><hr>
+          <label class="attributes">Miva List Date:</label><p class="properties">&nbsp;{{item.listdate}}</p><hr>
+          <label class="attributes">Status:</label><p class="properties">&nbsp;{{item.itemstatus}}</p><hr>
+          <label class="attributes">Name: </label><p class="properties">&nbsp;{{item.productname}}</p><hr>
+          <label class="attributes">Details: </label><p class="properties">&nbsp;{{item.productdetails}}</p><hr>
+          <label class="attributes">CCC:</label><p class="properties">&nbsp;{{item.ccc}}</p><hr>
+          <label class="attributes">Retail Price: </label><p class="properties">&nbsp;{{item.retailprice}}</p><hr>
+          <label class="attributes">Cost Price:</label><p class="properties">&nbsp;{{item.costprice}}</p><hr>
+          <!--<label class="attributes">Overview: </label><p class="attributes">&nbsp;{{item.overview}}</p><br>-->
+          <table id="full-display-table">
+          <label class="attributes">Variants & Quantity & UPC</label>
+          <tbody>
+            <!--<tr>-->
+            <!--  <th >Variant</th><th>Quantity</th>-->
+            <!--</tr>-->
+            <tr ng-repeat="s in item.sizes">
+              <td style="color:black">{{s.size}}</td><td style="color:black">{{s.quantity}}</td><td style="color:black">{{s.upc}}</td>
+            </tr>
+          </tbody>
+        </table><hr>
+        <label class="attributes">Related Products:</label><p class="properties">&nbsp;{{item.relatedproducts}}</p><hr>
+        <label class="attributes">Brand Name:</label><p class="properties">&nbsp;{{item.brandname}}</p><hr>
+        <label class="attributes">Brand Permission:</label><p class="properties">&nbsp;{{item.brandpermission}}</p><hr>
+        <label class="attributes">Compare At:</label><p class="properties">&nbsp;{{item.compareat}}</p><hr>
+        <label class="attributes">Made In:</label><p class="properties">&nbsp;{{item.madein}}</p><hr>
+        <!--<label class="attributes">Specifications:</label><p class="properties">&nbsp;{{item.productspecifications}}</p><hr>-->
+        <h3>Google Info</h3><hr>
+        <label class="attributes">Title:</label><p class="properties">&nbsp;{{item.gtitle}}</p><hr>
+        <label class="attributes">Condition:</label><p class="properties">&nbsp;{{item.gcondition}}</p><hr>
+        <label class="attributes">Availibility: </label><p class="properties">{{item.gavailibility}}</p><hr>
+        <label class="attributes">Product Category:</label><p class="properties">&nbsp;</p><hr>
+        <label class="attributes">Type:</label><p class="properties">&nbsp;{{item.gproducttype}}</p><hr>
+        <label class="attributes">Color:</label><p class="properties">&nbsp;{{item.gcolor}}</p><hr>
+        <label class="attributes">Material:</label><p class="properties">&nbsp;{{item.gmaterial}}</p><hr>
+        <label class="attributes">Pattern:</label><p class="properties">&nbsp;{{item.gpattern}}</p><hr>
+        <label class="attributes">Gender:</label><p class="properties">&nbsp;{{item.ggender}}</p><hr>
+        <label class="attributes">Age Group:</label><p class="properties">&nbsp;{{item.gagegroup}}</p><hr>
+        <label class="attributes">Size Type:</label><p class="properties">&nbsp;{{item.gsizetype}}</p><hr>
+        <label class="attributes">Size System:</label><p class="properties">&nbsp;{{item.gsizesystem}}</p><hr>
+
+        <label>IMG 1 <img ng-show="item.img1" ng-click="displayImage(item.img1)" class="full-display-image" ng-src="/uploads/{{item.img1 != '' && item.img1 || 'blank.png'}}"></label><br>
+        <label>IMG 2 <img ng-show="item.img2" ng-click="displayImage(item.img2)" class="full-display-image" ng-src="/uploads/{{item.img2 != '' && item.img2 || 'blank.png'}}"></label><br>
+        <label>IMG 3 <img ng-show="item.img3" ng-click="displayImage(item.img3)" class="full-display-image" ng-src="/uploads/{{item.img3 != '' && item.img3 || 'blank.png'}}"></label><br>
+        <label>IMG 4 <img ng-show="item.img4" ng-click="displayImage(item.img4)" class="full-display-image" ng-src="/uploads/{{item.img4 != '' && item.img4 || 'blank.png'}}"></label><br>
+        <label>IMG 5 <img ng-show="item.img5" ng-click="displayImage(item.img5)" class="full-display-image" ng-src="/uploads/{{item.img5 != '' && item.img5 || 'blank.png'}}"></label><br>
+        <label>IMG 6 <img ng-show="item.img6" ng-click="displayImage(item.img6)" class="full-display-image" ng-src="/uploads/{{item.img6 != '' && item.img6 || 'blank.png'}}"></label><br>
+        <label>IMG 7 <img ng-show="item.img7" ng-click="displayImage(item.img7)" class="full-display-image" ng-src="/uploads/{{item.img7 != '' && item.img7 || 'blank.png'}}"></label><br>
+        <label>IMG 8 <img ng-show="item.img8" ng-click="displayImage(item.img8)" class="full-display-image" ng-src="/uploads/{{item.img8 != '' && item.img8 || 'blank.png'}}"></label><br>
+        <label>IMG 9 <img ng-show="item.img9" ng-click="displayImage(item.img9)" class="full-display-image" ng-src="/uploads/{{item.img9 != '' && item.img9 || 'blank.png'}}"></label><br>
+        <label>IMG 10 <img ng-show="item.img10" ng-click="displayImage(item.img10)" class="full-display-image" ng-src="/uploads/{{item.img10 != '' && item.img10 || 'blank.png'}}"></label><br>
+      </div>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="controllers/controller.js"></script>
+    <!--<script src="controllers/manipulate.js"></script>-->
+    <script src="controllers/effects.js"></script>
+    </body>
+</html>
